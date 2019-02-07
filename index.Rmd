@@ -1,0 +1,126 @@
+<br> 
+<center><img src="http://i.imgur.com/sSaOozN.png" width="500"></center>
+
+## Visualization_Exercise 1
+
+### By MPA Candidate  Long Zong
+
+This is the data that is being used
+
+```{r}
+link="https://github.com/rockzonglong/VisualAnalytics_2_tabularData/raw/master/data/Tableau%20Applicable%20Annual%20Report%201.csv"
+```
+
+```{r,eval=TRUE, echo=FALSE}
+mydata=read.csv(link)
+```
+
+See the type of data it includes
+```{r,eval=TRUE, echo=FALSE}
+names(mydata)
+```
+See the percentage of repeat donor
+```{r,eval=TRUE, echo=FALSE}
+absoluteT=table(mydata$Repeat.Donor)
+TABLE=prop.table(absoluteT)
+TABLE
+```
+
+Pie Plot on the Percentage
+
+```{r,eval=TRUE, echo=FALSE}
+percentage=prop.table(absoluteT)
+pie(percentage)
+```
+
+
+
+Making some modification
+
+
+
+
+
+```{r}
+names(TABLE)[1]="N/A"
+pie(TABLE)
+```
+
+
+
+Making a bar plot
+
+```{r, echo=FALSE}
+TABLE1=TABLE*100
+paste0(round(TABLE1,2),'%')
+annotation=paste0(round(TABLE1,2),'%')
+```
+
+```{r,eval=TRUE, echo=FALSE}
+titleText='Percentage of Repeat Donors in Friends of WPC Nepal'
+sourceText='Based on Database from DonorPerfect'
+
+paomadeng=rainbow(length(TABLE)) 
+
+Position=barplot(TABLE1,
+        col=paomadeng,
+        border=NA,
+        xlim=c(0,80),
+        main=titleText,
+        xlab = '(in %)',
+        horiz = T,
+        las=2)
+
+text(y=Position,x=TABLE1, labels=annotation,
+      pos=4,
+      cex=0.8)
+title(sub=sourceText, adj=0,cex.sub=0.7,
+      line = 3) 
+```
+
+Creating GGPLot
+```{r,eval=TRUE, echo=FALSE}
+GGtable=as.data.frame(TABLE)
+names(GGtable)=c("Answer","percentage")
+```
+
+```{r,eval=TRUE, echo=FALSE}
+library(ggplot2)
+```
+
+```{r,eval=TRUE, echo=FALSE}
+base= ggplot(data = GGtable, 
+             aes(x = reorder(Answer, percentage),
+                 y = percentage)) 
+plot1 = base + geom_bar(fill ="gray",
+                        stat = 'identity')
+plot2 = plot1 + labs(title=titleText,
+                     x =NULL, 
+                     y = NULL,
+                     caption = sourceText)
+plot3 = plot2 + geom_text(aes(y = percentage ,
+                            label = paste0(round(percentage,2), '%')),
+                        vjust=1,
+                        size = 3)
+plot3
+
+```
+
+Creating LoliPot
+
+```{r,eval=TRUE, echo=FALSE}
+GGtable1=GGtable[order(GGtable$percentage),]
+
+
+baseLLP = ggplot(GGtable1, aes(Answer,percentage)) 
+lolliplot2333=baseLLP + geom_segment(aes(y = 0, 
+                                   x = Answer, 
+                                   yend = percentage, 
+                                   xend = Answer), color = "gray") 
+lolliplot2444 = lolliplot2333 + geom_point()
+lolliplot2444 + scale_x_discrete(limits=GGtable1$Answer)
+```
+
+
+
+
